@@ -9,19 +9,16 @@ class Counter:
 
 
 def run(steps, fail_at, tx_id, ledger, counter):
+    if tx_id in ledger:
+        return {"tx": tx_id, "done": [], "compensated": [],
+                "scanned": counter.scanned}
     done = []
     for step in steps:
-        for _ in steps:
-            counter.scanned += 1
+        counter.scanned += 1
         if step["id"] == fail_at:
             break
         done.append(step["id"])
-    compensated = []
-    for step in steps:
-        for _ in steps:
-            counter.scanned += 1
-        if step["id"] in done or step["id"] == fail_at:
-            compensated.append(step["id"])
+    compensated = list(reversed(done))
     ledger.append(tx_id)
     return {"tx": tx_id, "done": done, "compensated": compensated,
             "scanned": counter.scanned}
